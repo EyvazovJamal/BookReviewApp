@@ -1,0 +1,114 @@
+@using Crud.Repositories.Base
+@model Crud.Models.Product
+
+@inject IProductRepository productRepository
+
+@{
+    var products=productRepository.GetAllProducts();
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="AddProduct" method="post">
+    <div class="form-group">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Price" class="control-label"></label>
+        <input asp-for="Price" class="form-control" type="number" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Count" class="control-label"></label>
+        <input asp-for="Count" class="form-control" type="number" />
+        <span asp-validation-for="Count" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mt-3">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
+<br>
+
+<h2>All Products</h2>
+
+@if(products==null|| products.Any()==false){
+    <h3>...</h3> 
+}
+
+else{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Name</th>
+                <th scope="col">Price</th>
+                <th scope="col">Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var product in products) {
+                <tr>
+                    <th><a href="/Product/@product.Id">@product.Id</a></th>
+                    <td>@product.Name</td>
+                    <td>@product.Price</td>
+                    <td>@product.Count</td>
+                    <td><button class="btn btn-danger" onclick="DeleteProduct(@product.Id)">delete</button>
+                   <button class="btn btn-danger" onclick="UpdateProduct(@product.Id)">Update</button></td>
+                   
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<script>
+    function DeleteProduct(id) {
+        if (!confirm("Are you sure you want to delete this product?")) {
+            return;
+        }
+
+        fetch(`/Product/${id}`, {
+            method: "DELETE"
+        })
+        .then(response => {
+            if (response.ok) {
+                alert("Product deleted successfully.");
+                location.reload(); // Обновляем страницу после удаления
+            } else {
+                alert("Failed to delete product.");
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    }
+</script>
+<script>
+    function UpdateProduct(id) {
+        let name = prompt("Enter new product name:");
+        let price = prompt("Enter new price:");
+        let count = prompt("Enter new count:");
+
+        if (!name || !price || !count) return;
+
+        let productData = {
+            id: id,
+            name: name,
+            price: parseFloat(price),
+            count: parseInt(count)
+        };
+
+        fetch(`/Product/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(productData)
+        })
+        .then(response => response.ok ? location.reload() : alert("Update failed."))
+        .catch(error => console.error("Error:", error));
+    }
+</script>
+
