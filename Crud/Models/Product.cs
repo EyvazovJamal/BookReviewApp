@@ -7,7 +7,14 @@ namespace Crud.Models;
 
 public class Product
 {
-    public int Id { get; set; }
-    public string? Name { get; set; }
-    public int  Price { get; set; }
+    private static int counter = 1;
+    public required int  Id { get; set; }
+    public required string Name { get; set; }
+    public int Price { get; set; }
+    public int Count  { get; set; }
+
+    public Product()
+    {
+        Id=counter++;
+    }
 }

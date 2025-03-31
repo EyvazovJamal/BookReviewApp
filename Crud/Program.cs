@@ -1,16 +1,25 @@
-var builder= WebApplication.CreateBuilder();
+using Crud.Repositories;
+using Crud.Repositories.Base;
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddControllers();
-
+var builder = WebApplication.CreateBuilder(args);
 
 
-var app=builder.Build();
+builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton<IProductRepository,ProductRamRepository>();
 
-app.UseSwagger();
-app.UseSwaggerUI();
-app.MapControllers();
+var app = builder.Build();
+
+app.UseExceptionHandler("/Home/Error");
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
-

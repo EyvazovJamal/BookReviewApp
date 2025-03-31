@@ -1,14 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Crud.Models;
 
-namespace Crud.Controllers.Services.Base.Repositories.Base
+namespace Crud.Repositories.Base;
+
+public interface IProductRepository
 {
-    public interface IProductRepository
-    {
-        Product GetProductById (int id);
-        void CreateProduct(Product product);
-    }
-}
+    IEnumerable<Product> GetAllProducts();
+    Product GetProductById (int id);
+    void InsertProduct(Product product);
+    bool DeleteProduct(int id);
+    bool UpdateProduct(int id,Product changedProduct);
+
+}    
