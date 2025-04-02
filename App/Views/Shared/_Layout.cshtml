@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿
+@{
+    bool isAuthenticated = base.User.Identity?.IsAuthenticated ?? false;
+    
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -24,10 +30,32 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <!-- Ссылка на страницу AllBooks из контроллера Book -->
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Book" asp-action="AllBooks">Books</a>
                         </li>
+                        @if(isAuthenticated==false)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Identity" asp-action="Login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Identity" asp-action="Registration">Registration</a>
+                            </li>
+                        }
+                        @if(isAuthenticated)
+                        {
+                             <li class="nav-item">
+                                <a class="nav-link" asp-controller="Identity" asp-action="Logout">Log Out</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="User" asp-action="MyInfo">My Info</a>
+                            </li>
+
+
+                        }
+
+                        
+
                     </ul>
                 </div>
             </div>
@@ -46,7 +74,7 @@
         </div>
     </footer>
     
-    <!-- Подключаем необходимые скрипты для Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        @RenderSection("Scripts", required: false)
 </body>
 </html>

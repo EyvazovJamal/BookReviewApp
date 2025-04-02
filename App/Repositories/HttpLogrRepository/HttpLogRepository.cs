@@ -1,41 +1,22 @@
-using System;
-using System.Collections.Generic;
-using System.Data.SqlTypes;
-using System.Linq;
-using System.Threading.Tasks;
-using Dapper;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Options;
 using App.Models;
-using App.Options;
 using App.Repositories.Base;
+using App.EntityFramework;
 
 namespace App.Repositories;
 
 public class HttpLogRepository : IHttpLogRepository
 {
-    private string connectionString;
-    
+    private readonly AppDbContext context;
 
-    public HttpLogRepository(IOptionsSnapshot<DataBaseOptions> options)
+    public HttpLogRepository(AppDbContext context)
     {
-        this.connectionString=options.Value.ConnectionString;
+       this.context = context;
     }
-
 
     public async Task InsertAsync(HttpLog httpLog)
     {
-        using (var connection = new SqlConnection(this.connectionString)){
-            await connection.OpenAsync();
+        await context.HttpLogs.AddAsync(httpLog);
+        await context.SaveChangesAsync();
 
-             await connection.ExecuteAsync(
-                sql: @"INSERT INTO HttpLog 
-                        (RequestId, Url, RequestBody, RequestHeaders, MethodType, 
-                         ResponseBody, ResponseHeaders, StatusCode, CreationDateTime, EndDateTime, ClientIp) 
-                      VALUES 
-                        (@RequestId, @Url, @RequestBody, @RequestHeaders, @MethodType, 
-                         @ResponseBody, @ResponseHeaders, @StatusCode, @CreationDateTime, @EndDateTime, @ClientIp);",
-                param: httpLog);
-        }
     }
 }

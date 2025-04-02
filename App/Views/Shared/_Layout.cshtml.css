@@ -46,3 +46,24 @@ button.accept-policy {
   white-space: nowrap;
   line-height: 60px;
 }
+.form-switch .form-check-input {
+  width: 2.5em;
+  margin-left: 0;
+  cursor: pointer;
+  background-color: #adb5bd;
+  border-color: #adb5bd;
+}
+.form-switch .form-check-input:checked {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+.form-switch .form-check-label {
+  cursor: pointer;
+  user-select: none;
+  margin-left: 0.5rem;
+  font-size: 0.875rem;
+  color: #495057;
+}
+.input-group-text {
+  transition: all 0.2s;
+}

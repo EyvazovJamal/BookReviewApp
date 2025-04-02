@@ -1,86 +1,57 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Dapper;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Options;
+
 using App.Models;
-using App.Options;
 using App.Repositories.BookRepository.Base;
+using App.EntityFramework;
+using Microsoft.EntityFrameworkCore;
 
 namespace App.Repositories.BookRepository;
 
 public class BookRepository : IBookRepository
 {
-    private readonly string connectionString;
+    private readonly AppDbContext context;
 
-    public BookRepository(IOptionsSnapshot<DataBaseOptions> options)
+    public BookRepository(AppDbContext context)
     {
-        connectionString = options.Value.ConnectionString;
+        this.context = context;
     }
-
-    public async Task AddBookAsync(Book book)
-    {
-        using (var connection = new SqlConnection(connectionString))
-        {
-            await connection.OpenAsync();
-
-            await connection.ExecuteAsync(
-                @"INSERT INTO Books (Title, Author, PublishedDate, Pages, Description) 
-                  VALUES (@Title, @Author, @PublishedDate, @Pages, @Description);",
-                book);
-        }
-    }
-
-   public async Task DeleteBookAsync(int id)
-    {
-    using (var connection = new SqlConnection(connectionString))
-    {
-        await connection.OpenAsync();
-
-        await connection.ExecuteAsync(
-            @"DELETE FROM Books WHERE Id = @Id;",
-            new { Id = id });
-    }
-    }
+    
 
     public async Task<IEnumerable<Book>> GetAllBooksAsync()
     {
-        using (var connection = new SqlConnection(connectionString))
-        {
-            await connection.OpenAsync();
-
-            return await connection.QueryAsync<Book>(
-                @"SELECT * FROM Books;");
-        }
+        return await context.Books.ToListAsync();
     }
 
     public async Task<Book?> GetBookByIdAsync(int id)
     {
-        using (var connection = new SqlConnection(connectionString))
-        {
-            await connection.OpenAsync();
+        return await context.Books
+                                .FirstOrDefaultAsync(b => b.Id == id);
+    }
 
-            return await connection.QueryFirstOrDefaultAsync<Book>(
-                @"SELECT * FROM Books WHERE Id = @Id;",
-                new { Id = id });
-        }
+    public async Task AddBookAsync(Book book)
+    {
+        await context.Books.AddAsync(book);
+        await context.SaveChangesAsync();
     }
 
     public async Task UpdateBookAsync(Book book)
     {
-        using (var connection = new SqlConnection(connectionString))
-        {
-            await connection.OpenAsync();
+        context.Books.Update(book);
+        await context.SaveChangesAsync();
+    }
 
-            await connection.ExecuteAsync(
-                @"UPDATE Books 
-                  SET Title = @Title, 
-                      Author = @Author, 
-                      PublishedDate = @PublishedDate, 
-                      Pages = @Pages, 
-                      Description = @Description 
-                  WHERE Id = @Id;",
-                book);
+    public async Task DeleteBookAsync(int id)
+    {
+        var book = await context.Books
+                                    .FirstOrDefaultAsync(b => b.Id == id);
+        if (book != null)
+        {
+            context.Books.Remove(book);
+            await context.SaveChangesAsync();
         }
     }
+    
 }
+
+
+
+

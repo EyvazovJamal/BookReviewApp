@@ -13,12 +13,11 @@ using Microsoft.Extensions.Logging;
 using App.Models;
 using App.Services.BookServices;
 using App.Services.BookServices.Base;
+using Microsoft.AspNetCore.Authorization;
 
 [Route("[controller]")]
 public class BookController : Controller
 {
-
-
     private readonly IBookService bookService;
     private readonly IValidator<Book> bookValidator;
 
@@ -35,13 +34,13 @@ public class BookController : Controller
             if(validationErrorsObject is string validationErrorsJson) 
             {
                 var validationErrors = JsonSerializer.Deserialize<IEnumerable<ValidationErrorItem>>(validationErrorsJson);
-
                 ViewData["validation_errors"] = validationErrors;
             }
         }
         return base.View();
     }
 
+    
     [HttpPost("Create")]
     public async Task<IActionResult> Create(Book book)
     {
@@ -59,9 +58,9 @@ public class BookController : Controller
         
         await bookService.AddBookAsync(book);
         return RedirectToAction("AllBooks");
-        
     }
 
+    
     [HttpGet("AllBooks")]
     public async Task<ActionResult> AllBooks()
     {
@@ -72,20 +71,15 @@ public class BookController : Controller
     [HttpPost("Delete/{id}")]
     public async Task<ActionResult> Delete(int id)
     {
-        
         await bookService.DeleteBookAsync(id);
-
-       
         return RedirectToAction("AllBooks");
     }
-
 
     
     [HttpGet("Edit/{id}")]
     public async Task<ActionResult> Edit(int id)
     {
         var book = await bookService.GetBookByIdAsync(id);
-        
         if (book == null)
         {
             return NotFound();
@@ -93,6 +87,7 @@ public class BookController : Controller
         return View(book);
     }
 
+    
     [HttpPost("Edit/{id}")]
     public async Task<ActionResult> Edit(int id, Book updatedBook)
     {
@@ -100,12 +95,7 @@ public class BookController : Controller
         {
             return BadRequest();
         }
-
         await bookService.UpdateBookAsync(updatedBook);
         return RedirectToAction("AllBooks");
     }
-
-
-
-
 }

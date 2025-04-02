@@ -17,8 +17,6 @@ public class TestController : ControllerBase
 {
     private ITestService testService;
     private IHttpLogger logger;
-     
-
     
     public TestController(ITestService testService,IHttpLogger logger)
     {
@@ -33,10 +31,6 @@ public class TestController : ControllerBase
         testService.FindBook();
         testService.NeverCrashes();
 
-    
-
-        return base.Ok();
-
-        
+        return base.Ok();    
     }
 }
