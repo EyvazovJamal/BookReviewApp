@@ -1,0 +1,140 @@
+@model App.Dtos.RegistrationDto
+@{
+    ViewData["Title"] = "Registration";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white py-3">
+                <h2 class="h5 mb-0 text-center">
+                    <i class="bi bi-person-plus me-2"></i>Create Account
+                </h2>
+            </div>
+            
+            <div class="card-body">
+                <!-- Общие ошибки валидации -->
+                
+                <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+                <form asp-action="Registration" method="post" class="needs-validation" novalidate>
+                    <!-- Поле Username -->
+                    <div class="mb-3">
+                        <label asp-for="Username" class="form-label fw-bold"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <input asp-for="Username" class="form-control" placeholder="Enter username" />
+                        </div>
+                        <span asp-validation-for="Username" class="text-danger small d-block mt-1"></span>
+                    </div>
+
+                    <!-- Поле Email -->
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label fw-bold"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            <input asp-for="Email" type="email" class="form-control" placeholder="your@email.com" />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger small d-block mt-1"></span>
+                    </div>
+
+                    <!-- Поле Password с переключателем -->
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label fw-bold"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input asp-for="Password" type="password" 
+                                   class="form-control" 
+                                   placeholder="At least 5 characters"
+                                   id="passwordField" />
+                            <div class="input-group-text bg-light">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input toggle-password" 
+                                           type="checkbox" 
+                                           id="showPasswordToggle">
+                                    <label class="form-check-label small" 
+                                           for="showPasswordToggle">Show</label>
+                                </div>
+                            </div>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small d-block mt-1"></span>
+                    </div>
+
+                    <!-- Поле Confirm Password с переключателем -->
+                    <div class="mb-4">
+                        <label asp-for="ConfirmPassword" class="form-label fw-bold"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                            <input asp-for="ConfirmPassword" type="password" 
+                                   class="form-control" 
+                                   placeholder="Confirm your password"
+                                   id="confirmPasswordField" />
+                            <div class="input-group-text bg-light">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input toggle-password" 
+                                           type="checkbox" 
+                                           id="showConfirmPasswordToggle">
+                                    <label class="form-check-label small" 
+                                           for="showConfirmPasswordToggle">Show</label>
+                                </div>
+                            </div>
+                        </div>
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small d-block mt-1"></span>
+                    </div>
+
+                    <!-- Кнопка отправки -->
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-primary py-2">
+                            <i class="bi bi-check-circle me-2"></i>Register Now
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card-footer text-center py-3">
+                <p class="mb-0">
+                    Already registered? 
+                    <a asp-action="Login" class="text-decoration-none fw-bold">Sign In Here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        // Переключение видимости пароля
+        document.querySelectorAll('.toggle-password').forEach(toggle => {
+            toggle.addEventListener('change', function() {
+                const targetField = this.id === 'showPasswordToggle' 
+                    ? document.getElementById('passwordField') 
+                    : document.getElementById('confirmPasswordField');
+                
+                targetField.type = this.checked ? 'text' : 'password';
+                
+                // Обновляем текст label
+                const label = this.nextElementSibling;
+                label.textContent = this.checked ? 'Hide' : 'Show';
+            });
+        });
+
+        // Bootstrap валидация формы
+        (() => {
+            'use strict';
+            const forms = document.querySelectorAll('.needs-validation');
+            
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
+}

@@ -1,0 +1,31 @@
+@model App.Models.User
+
+@{
+    ViewData["Title"] = "My Info";
+}
+
+<h2>My Info</h2>
+
+<div>
+    <img src="@Model.AvatarUrl" alt="Avatar" width="150" height="150" style="border-radius: 50%;">
+</div>
+
+<div>
+    <p><strong>Name:</strong> @Model.Name</p>
+    <p><strong>Email:</strong> @Model.Email</p>
+</div>
+
+@if (Model.FavoriteBooks.Any())
+{
+    <h3>Favorite Books</h3>
+    <ul>
+        @foreach (var book in Model.FavoriteBooks)
+        {
+            <li>@book.Title</li>
+        }
+    </ul>
+}
+else
+{
+    <p>No favorite books added.</p>
+}
